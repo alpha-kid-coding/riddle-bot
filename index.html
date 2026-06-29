@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riddle Bot</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <button id="reviews-btn" type="button" class="reviews-corner">Reviews</button>
+  <button id="times-btn" type="button" class="times-corner">Times</button>
+  <div id="score-corner" class="score-corner">Points: 0</div>
+  <div id="timer-corner" class="timer-corner" hidden>Time: 00:00</div>
+
+  <main class="app">
+    <header class="header">
+      <h1>Riddle Bot</h1>
+      <p class="subtitle">Try 1 = 1 pt · 2 clues = 0.5 pt max · try 6+ = 0.25 pt</p>
+    </header>
+
+    <section class="card" aria-live="polite">
+      <div class="progress">
+        <span id="riddle-count">Riddle 0 of 16</span>
+        <span id="step-label">Ready</span>
+      </div>
+
+      <div id="content" class="content">
+        <p class="prompt">Loading rules...</p>
+      </div>
+
+      <div class="hint-bar">
+        <div class="step-dot" data-step="1"></div>
+        <div class="step-dot" data-step="2"></div>
+        <div class="step-dot" data-step="3"></div>
+      </div>
+
+      <div class="nav-bar">
+        <button id="give-up-btn" type="button" class="give-up-btn" disabled>Give Up</button>
+        <button id="clue-btn" type="button" class="clue-btn" disabled>Give a Clue</button>
+        <button id="prev-btn" type="button" disabled>← Previous</button>
+        <button id="end-game-btn" type="button" class="end-game-btn" disabled hidden>End Game</button>
+        <button id="next-btn" type="button" disabled>Next →</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p id="footer-text">Space → Riddle → Clues → Answer → Next riddle</p>
+      <p class="team-credit">cootra</p>
+    </footer>
+  </main>
+
+  <button id="keyboard-toggle-btn" type="button" class="keyboard-toggle">Keyboard</button>
+  <button id="start-over-btn" type="button" class="start-over-btn">Start Over</button>
+  <div id="virtual-keyboard" class="virtual-keyboard" hidden aria-label="Virtual keyboard"></div>
+
+  <script src="riddles.js?v=61"></script>
+  <script src="app.js?v=61"></script>
+</body>
+</html>
