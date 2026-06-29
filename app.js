@@ -121,7 +121,7 @@ let fiveMinuteLimitMs = 5 * 60 * 1000;
 let timeLimitReached = false;
 let synonymLookup = null;
 
-const STEP_LABELS = ["Ready", "Riddle", "Clues", "Answer", "End Game"];
+const STEP_LABELS = ["Ready-ish", "Riddle Time", "Hint Sauce", "Reveal", "Mic Drop"];
 
 function loadRiddleSet(setIndex) {
   if (typeof RIDDLE_SETS === "undefined" || !RIDDLE_SETS.length) {
@@ -314,7 +314,7 @@ function updateTimerDisplay() {
 
   if (fiveMinuteMode) {
     const remainingMs = Math.max(0, fiveMinuteLimitMs - elapsedMs);
-    timerCornerEl.textContent = "Time Left: " + formatRoundTime(remainingMs);
+    timerCornerEl.textContent = "Drama Clock Left: " + formatRoundTime(remainingMs);
 
     if (
       timedRoundActive &&
@@ -325,13 +325,13 @@ function updateTimerDisplay() {
       !countdownActive
     ) {
       timeLimitReached = true;
-      guessFeedback = "Time is up!";
+      guessFeedback = "Time is up. The clock has chosen chaos.";
       tryEndGame(true);
     }
     return;
   }
 
-  timerCornerEl.textContent = "Time: " + formatRoundTime(elapsedMs);
+  timerCornerEl.textContent = "Drama Clock: " + formatRoundTime(elapsedMs);
 }
 
 function finalizeRoundTimer() {
@@ -711,7 +711,7 @@ function calculatePoints(index) {
 
 function getCorrectFeedback(points, tries) {
   const noun = points === 1 ? "point" : "points";
-  return "Correct on try " + tries + "! +" + formatScore(points) + " " + noun;
+  return "Nailed it on try " + tries + "! +" + formatScore(points) + " " + noun + " for your giant brain.";
 }
 
 function getWrongFeedback(index) {
@@ -720,27 +720,27 @@ function getWrongFeedback(index) {
   const lateTry = getModePointValue(0.25);
 
   if (nextTry > 5) {
-    return "Not quite — try again! Try 6 or more earns " + formatScore(lateTry) + " points if correct.";
+    return "Nope, but funny attempt. Try again! Try 6+ earns " + formatScore(lateTry) + " points if correct.";
   }
 
   if (cluesRevealed[index] >= 1) {
-    return "Not quite — try again! A clue was shown, so " + formatScore(clueMax) + " point max if correct.";
+    return "Close-ish! A clue was shown, so " + formatScore(clueMax) + " point max if correct.";
   }
 
   if (nextTry === 1) {
-    return "Not quite — try again!";
+    return "Nope. Swing again.";
   }
 
-  return "Not quite — try again! Tries 2-5 earn " + formatScore(clueMax) + " points if correct.";
+  return "Not quite. Try again! Tries 2-5 earn " + formatScore(clueMax) + " points if correct.";
 }
 
 function updateScoreDisplay(total) {
   if (total) {
-    scoreCornerEl.textContent = "Points: " + formatScore(score) + " / " + total;
+    scoreCornerEl.textContent = "Giggle Points: " + formatScore(score) + " / " + total;
     return;
   }
 
-  scoreCornerEl.textContent = "Points: " + formatScore(score);
+  scoreCornerEl.textContent = "Giggle Points: " + formatScore(score);
 }
 
 function getRoundMaxPoints() {
@@ -790,7 +790,7 @@ function requestClue() {
   }
 
   if (cluesRevealed[riddleIndex] >= 2) {
-    guessFeedback = "You already have both clues.";
+    guessFeedback = "You already unlocked both clues, detective.";
     render();
     return;
   }
@@ -800,8 +800,8 @@ function requestClue() {
   const clueMax = formatScore(getModePointValue(0.5));
   guessFeedback =
     cluesRevealed[riddleIndex] === 1
-      ? "Here is your first clue! " + clueMax + " point max for this riddle."
-      : "Here is your second clue! " + clueMax + " point max for this riddle.";
+      ? "Clue #1 dropped! " + clueMax + " point max for this riddle."
+      : "Clue #2 dropped! " + clueMax + " point max for this riddle.";
   pendingGuessValue = "";
   render();
 }
@@ -813,9 +813,9 @@ function isCluesRequest(guess) {
 
 function showLoadError() {
   contentEl.innerHTML =
-    '<p class="prompt error">Riddles failed to load. Refresh the page or open index.html from the AryanFirstRiddle folder.</p>';
-  footerTextEl.textContent = "Check that riddles.js is in the same folder as index.html.";
-  stepLabelEl.textContent = "Error";
+    '<p class="prompt error">Riddles failed to load. Even the jokes are confused. Refresh the page or open index.html from the AryanFirstRiddle folder.</p>';
+  footerTextEl.textContent = "Check that riddles.js is hanging out beside index.html.";
+  stepLabelEl.textContent = "Oops";
   updateScoreDisplay();
   updateNavButtons();
 }
@@ -1208,63 +1208,63 @@ function getFooterText() {
   const total = riddles.length;
 
   if (countdownActive) {
-    return "Timed round starts in " + countdownLabel + ".";
+    return "Chaos starts in " + countdownLabel + ".";
   }
 
   if (showReviewsListPage) {
-    return "Click Back to return to the game.";
+    return "Click Back to jump into the chaos.";
   }
 
   if (showTimesListPage) {
-    return "Click Back to return to the game.";
+    return "Click Back to jump into the chaos.";
   }
 
   if (showRulesPage) {
-    return "Press Space or click Start Game to begin.";
+    return "Press Space or click Start the Chaos.";
   }
 
   if (gameOver) {
     if (showReviewPage) {
-      return "Pick 1–5 stars, write your review, then Submit. Press Enter to submit.";
+      return "Pick 1-5 stars, drop your hot take, then hit Submit. Press Enter to submit.";
     }
-    return "Press Enter to rate this round, or ← to review riddles.";
+    return "Press Enter to rate this round, or <- to review riddles.";
   }
 
   if (unansweredWarningPending) {
-    return "Press End Game or Space to finish anyway, or use ← / Next to go back and answer.";
+    return "Press Mic Drop or Space to finish anyway, or use <- / Next to go back and answer.";
   }
 
   if (step === 0) {
     if (fiveMinuteMode) {
-      return "5 Min Double Points mode. Try 1 = 2 pt · tries 2-5 = 1 pt · clue shown = 1 pt max · try 6+ = 0.5 pt.";
+      return "5 Min Double Points mode: speed goblin edition.";
     }
-    return "Space to start. Try 1 = 1 pt · tries 2-5 = 0.5 pt · 1+ clues = 0.5 pt max · try 6+ = 0.25 pt.";
+    return "Space to start. One-shot wins = big points. More hints = fewer points.";
   }
 
   if (isViewingPast()) {
     return fiveMinuteMode
       ? "Reviewing a previous riddle. Any clue shown means 1 point max."
-      : "Reviewing a previous riddle. Any clue shown means half a point max.";
+      : "Reviewing a previous riddle. Any clue shown means half-point max.";
   }
 
   if (step === 1 || step === 2) {
     const cluesLeft = 2 - (cluesRevealed[riddleIndex] || 0);
     if (cluesRevealed[riddleIndex] >= 1) {
       if (fiveMinuteMode) {
-        return "A clue was shown — 1 point max. Try 6+ earns 0.5 points.";
+        return "A clue was shown - 1 point max. Try 6+ earns 0.5 points.";
       }
-      return "A clue was shown — half point max. Try 6+ earns a quarter point.";
+      return "A clue was shown - half-point max. Try 6+ earns a quarter point.";
     }
     if (cluesLeft > 0) {
-      return "Type your answer, click Give a Clue, or press Space for the next hint (" + cluesLeft + " left).";
+      return "Type your answer, click Spill a Clue, or press Space for the next hint (" + cluesLeft + " left).";
     }
-    return "Type your answer, or press Space to reveal the answer.";
+    return "Type your answer, or press Space for the dramatic reveal.";
   }
 
   const isLast = riddleIndex === total - 1;
   return isLast
-    ? "Click End Game to finish the round, or press Space."
-    : "Press Space for the next riddle, or Next → to jump ahead.";
+    ? "Click Mic Drop to finish the round, or press Space."
+    : "Press Space for the next riddle, or Next -> to jump ahead.";
 }
 
 function bindGuessForm() {
@@ -1315,7 +1315,7 @@ function buildVirtualKeyboard() {
 }
 
 function updateKeyboardUI() {
-  keyboardToggleBtn.textContent = keyboardOpen ? "Hide Keyboard" : "Keyboard";
+  keyboardToggleBtn.textContent = keyboardOpen ? "Hide Type-o-matic" : "Type-o-matic";
   keyboardToggleBtn.classList.toggle("active", keyboardOpen);
   keyboardToggleBtn.setAttribute("aria-pressed", keyboardOpen ? "true" : "false");
   virtualKeyboardEl.hidden = !keyboardOpen;
@@ -1360,7 +1360,7 @@ function submitGuess(guess) {
   pendingGuessValue = guess;
 
   if (!guess.trim()) {
-    guessFeedback = "Type an answer first.";
+    guessFeedback = "Type an answer first, brave guesser.";
     render();
     return;
   }
@@ -1404,14 +1404,14 @@ function getRiddleSummaryText(index) {
   }
 
   if (gaveUp[index]) {
-    return "Gave up — 0 points";
+    return "Surrendered - 0 points";
   }
 
   if (isAnswerRevealed(index)) {
-    return "Answer revealed — 0 points";
+    return "Answer revealed - 0 points";
   }
 
-  return "Not answered — 0 points";
+  return "Not answered - 0 points";
 }
 
 function buildRiddleSummaryHtml() {
@@ -1438,22 +1438,22 @@ function buildRiddleSummaryHtml() {
 function renderRulesPage() {
   const total = riddles.length;
 
-  riddleCountEl.textContent = "How to Play";
+  riddleCountEl.textContent = "How To Chaos";
   updateScoreDisplay();
-  stepLabelEl.textContent = "Rules";
+  stepLabelEl.textContent = "The Rules-ish";
   updateStepDots();
   updateNavButtons();
 
   contentEl.innerHTML =
     '<div class="block rules-block">' +
-    "<h2>How to Play the Riddle Game</h2>" +
+    "<h2>How to Play This Silly Riddle Showdown</h2>" +
     "<ul class=\"rules-list\">" +
     "<li>Each round has <strong>" + total + " riddles</strong>.</li>" +
-    "<li><strong>Answering:</strong> Type your answer and click <strong>Submit</strong>. You can guess as many times as you want.</li>" +
-    "<li><strong>Hints:</strong> Click <strong>Give a Clue</strong>, type <strong>clue</strong>, or press the <strong>Spacebar</strong> to see a hint.</li>" +
-    "<li><strong>Giving Up:</strong> Click <strong>Give Up</strong> to see the answer, but you will not get any points.</li>" +
+    "<li><strong>Answering:</strong> Type your answer and click <strong>Submit</strong>. Keep guessing till your keyboard begs for mercy.</li>" +
+    "<li><strong>Hints:</strong> Click <strong>Spill a Clue</strong>, type <strong>clue</strong>, or press <strong>Spacebar</strong> for help.</li>" +
+    "<li><strong>Surrender:</strong> Click <strong>I Surrender</strong> to reveal the answer, but no points for dramatic exits.</li>" +
     "<li><strong>Moving Around:</strong> Use the <strong>Previous</strong> and <strong>Next</strong> buttons to skip between riddles.</li>" +
-    "<li><strong>Ending:</strong> At the end, press <strong>Enter</strong> to rate the game with stars and leave a review.</li>" +
+    "<li><strong>Ending:</strong> At the end, press <strong>Enter</strong> to drop stars and your hottest review take.</li>" +
     "<li><strong>How You Win Points</strong></li>" +
     "<li><strong>1 Point:</strong> Guess the answer correctly on your 1st try (before seeing both clues).</li>" +
     "<li><strong>0.5 Points:</strong> Guess it right on your 2nd, 3rd, 4th, or 5th try, or after seeing any clue.</li>" +
@@ -1461,8 +1461,8 @@ function renderRulesPage() {
     "<li><strong>5 Min Double Points:</strong> Play a 5-minute round where each correct riddle is worth double points.</li>" +
     "</ul>" +
     '<div class="start-options">' +
-    '<button id="start-btn" type="button" class="start-btn">Start Game</button>' +
-    '<button id="start-five-btn" type="button" class="start-btn start-five-btn">5 Min Double Points</button>' +
+    '<button id="start-btn" type="button" class="start-btn">Start the Chaos</button>' +
+    '<button id="start-five-btn" type="button" class="start-btn start-five-btn">5 Min Turbo Chaos</button>' +
     "</div>" +
     "</div>";
 
@@ -1473,33 +1473,33 @@ function renderUnansweredWarning() {
   const unanswered = getUnansweredRiddleNumbers();
   const total = riddles.length;
 
-  riddleCountEl.textContent = "Round complete?";
+  riddleCountEl.textContent = "Round complete... maybe?";
   updateScoreDisplay();
-  stepLabelEl.textContent = "Warning";
+  stepLabelEl.textContent = "Heads Up";
   updateStepDots();
   updateNavButtons();
 
   contentEl.innerHTML =
     '<div class="block warning-block">' +
-    "<h2>Unanswered Riddles</h2>" +
+    "<h2>Unanswered Riddles Alert</h2>" +
     "<p>You have not answered " + formatRiddleList(unanswered) + ".</p>" +
-    "<p>Go back to solve them for more points, or press End Game to finish the round.</p>" +
-    '<button id="end-game-inline-btn" type="button" class="start-btn end-game-inline-btn">End Game</button>' +
+    "<p>Go back for more points, or press Mic Drop to finish anyway.</p>" +
+    '<button id="end-game-inline-btn" type="button" class="start-btn end-game-inline-btn">Mic Drop</button>' +
     "</div>";
 
   footerTextEl.textContent = getFooterText();
 }
 
 function renderCountdownPage() {
-  riddleCountEl.textContent = "Timed Round";
+  riddleCountEl.textContent = "Turbo Round";
   updateScoreDisplay();
-  stepLabelEl.textContent = "Starting";
+  stepLabelEl.textContent = "Launching";
   updateStepDots();
   updateNavButtons();
 
   contentEl.innerHTML =
     '<div class="block countdown-block">' +
-    "<h2>Get Ready</h2>" +
+    "<h2>Get Ready To Rumble</h2>" +
     '<p class="countdown-number">' + countdownLabel + "</p>" +
     "</div>";
 
@@ -1733,7 +1733,7 @@ function renderReviewsListPage() {
 
   if (reviews.length === 0) {
     html +=
-      '<p class="reviews-empty">No reviews yet. Finish a round and leave a rating!</p>';
+      '<p class="reviews-empty">No reviews yet. Be the first critic with strong opinions.</p>';
   } else {
     html += '<ul class="reviews-list">';
 
@@ -1759,7 +1759,7 @@ function renderReviewsListPage() {
       if (entry.review) {
         html += '<p class="review-text">' + escapeHtml(entry.review) + "</p>";
       } else {
-        html += '<p class="review-text review-text-empty">No written review.</p>';
+        html += '<p class="review-text review-text-empty">No written review. Silent but mysterious.</p>';
       }
 
       html += "</li>";
@@ -1779,7 +1779,7 @@ function renderReviewsListPage() {
 function renderTimesListPage() {
   const times = loadTimesFromStorage();
 
-  riddleCountEl.textContent = "Your Times";
+  riddleCountEl.textContent = "Your Speed Runs";
   updateScoreDisplay();
   stepLabelEl.textContent = "Times";
   updateStepDots();
@@ -1791,7 +1791,7 @@ function renderTimesListPage() {
 
   if (times.length === 0) {
     html +=
-      '<p class="reviews-empty">No times yet. Complete a round to save your time!</p>';
+      '<p class="reviews-empty">No times yet. Finish a round so your speed can be judged.</p>';
   } else {
     html += '<ul class="reviews-list">';
 
@@ -1879,7 +1879,7 @@ function setSelectedStars(stars) {
 
 function submitReview() {
   if (selectedStars < 1) {
-    reviewError = "Please pick a star rating before submitting.";
+    reviewError = "Pick at least one star before launching your review.";
     render();
     return;
   }
@@ -1891,7 +1891,7 @@ function submitReview() {
 }
 
 function renderReviewPage() {
-  riddleCountEl.textContent = "Rate this round";
+  riddleCountEl.textContent = "Rate This Chaos";
   updateScoreDisplay(riddles.length);
   stepLabelEl.textContent = "Review";
   updateStepDots();
@@ -1899,12 +1899,12 @@ function renderReviewPage() {
 
   let html =
     '<div class="block review-page-block">' +
-    "<h2>How was this round?</h2>" +
-    "<p class=\"review-intro\">Pick how many stars the game deserves, then write a short review.</p>" +
+    "<h2>How was the chaos?</h2>" +
+    "<p class=\"review-intro\">Pick your stars, then drop a short and spicy review.</p>" +
     buildStarPickerHtml(selectedStars) +
-    '<label class="review-label" for="review-input">Your review</label>' +
-    '<textarea id="review-input" class="review-input" rows="5" maxlength="1000" placeholder="What did you like? What could be better?"></textarea>' +
-    '<button id="review-submit-btn" type="button" class="start-btn">Submit Review</button>';
+    '<label class="review-label" for="review-input">Your hot take</label>' +
+    '<textarea id="review-input" class="review-input" rows="5" maxlength="1000" placeholder="What was hilarious? What needs more chaos?"></textarea>' +
+    '<button id="review-submit-btn" type="button" class="start-btn">Send Review</button>';
 
   if (reviewError) {
     html += '<p class="review-error">' + escapeHtml(reviewError) + "</p>";
@@ -1936,7 +1936,7 @@ function renderEndGame() {
   const maxPoints = getRoundMaxPoints();
   const unanswered = getUnansweredRiddleNumbers();
 
-  riddleCountEl.textContent = "All " + totalRiddles + " riddles complete";
+  riddleCountEl.textContent = "All " + totalRiddles + " riddles conquered";
   updateScoreDisplay(maxPoints);
   stepLabelEl.textContent = STEP_LABELS[4];
   updateStepDots();
@@ -1944,8 +1944,8 @@ function renderEndGame() {
 
   let endGameHtml =
     '<div class="block end-game-block">' +
-    '<h2 class="end-game-title">End Game</h2>' +
-    '<p class="end-game-message">You finished the round with <strong>' + formatScore(score) + "</strong> out of <strong>" + formatScore(maxPoints) + "</strong> points.</p>";
+    '<h2 class="end-game-title">Mic Dropped</h2>' +
+    '<p class="end-game-message">You finished with <strong>' + formatScore(score) + "</strong> out of <strong>" + formatScore(maxPoints) + "</strong> giggle points.</p>";
 
   if (timedModeChoice) {
     endGameHtml +=
@@ -1955,7 +1955,7 @@ function renderEndGame() {
   }
 
   if (fiveMinuteMode) {
-    endGameHtml += '<p class="end-game-time">Mode: <strong>5 Min Double Points</strong></p>';
+    endGameHtml += '<p class="end-game-time">Mode: <strong>5 Min Turbo Chaos</strong></p>';
   }
 
   endGameHtml +=
@@ -1970,8 +1970,8 @@ function renderEndGame() {
   }
 
   endGameHtml +=
-    '<button id="continue-review-btn" type="button" class="start-btn review-continue-btn">Rate &amp; Review</button>' +
-    '<button id="skip-review-btn" type="button" class="start-btn review-skip-btn">Skip Review</button>';
+    '<button id="continue-review-btn" type="button" class="start-btn review-continue-btn">Rate &amp; Roast</button>' +
+    '<button id="skip-review-btn" type="button" class="start-btn review-skip-btn">Skip The Roast</button>';
   endGameHtml += "</div>";
   contentEl.innerHTML = endGameHtml;
   footerTextEl.textContent = getFooterText();
@@ -2019,8 +2019,8 @@ function render() {
 
   riddleCountEl.textContent =
     step === 0
-      ? "Riddle 0 of " + total
-      : "Riddle " + (riddleIndex + 1) + " of " + total;
+      ? "Brain Teaser 0 of " + total
+      : "Brain Teaser " + (riddleIndex + 1) + " of " + total;
   updateScoreDisplay();
   stepLabelEl.textContent = STEP_LABELS[step];
   updateStepDots();
@@ -2028,7 +2028,7 @@ function render() {
 
   if (step === 0) {
     contentEl.innerHTML =
-      '<p class="prompt">Press the spacebar to get your first riddle!</p>';
+      '<p class="prompt">Press Space to summon your first riddle!</p>';
     footerTextEl.textContent = getFooterText();
     return;
   }
@@ -2038,7 +2038,7 @@ function render() {
   let html = "";
 
   if (isViewingPast()) {
-    html += '<p class="review-badge">Reviewing previous riddle</p>';
+    html += '<p class="review-badge">Time travel mode: reviewing previous riddle</p>';
   }
 
   if (step >= 1) {
@@ -2071,23 +2071,25 @@ function render() {
   if (!revealed) {
     html +=
       '<div class="block guess-block">' +
-      "<h2>Your Answer</h2>" +
+      "<h2>Your Guess</h2>" +
       '<p class="attempt-count">Attempt ' + getAttemptCount(riddleIndex) + "</p>" +
       '<p class="clues-penalty-note">' +
-      "You earn " + formatScore(getModePointValue(1)) + " points if you answer the question correctly on the first try. " +
-      "You earn " + formatScore(getModePointValue(0.5)) + " points if the question is answered within 2-5 tries. " +
-      "You earn " + formatScore(getModePointValue(0.25)) + " points if the riddle is answered in 6 or more tries." +
+      "First-try wizardry earns " + formatScore(getModePointValue(1)) + " points. " +
+      "Tries 2-5 earn " + formatScore(getModePointValue(0.5)) + " points. " +
+      "Try 6+ earns " + formatScore(getModePointValue(0.25)) + " points." +
       "</p>" +
       '<form id="guess-form" class="guess-form">' +
-      '<input id="guess-input" type="text" placeholder="Type your answer..." autocomplete="off" />' +
+      '<input id="guess-input" type="text" placeholder="Type your best guess..." autocomplete="off" />' +
       '<button type="submit">Submit</button>' +
       "</form>";
 
     if (guessFeedback) {
       let feedbackClass = "info";
-      if (guessFeedback.indexOf("Correct") === 0) {
+      if (guessFeedback.indexOf("Nailed it") === 0) {
         feedbackClass = "success";
       } else if (
+        guessFeedback.indexOf("Nope") === 0 ||
+        guessFeedback.indexOf("Close-ish") === 0 ||
         guessFeedback.indexOf("Not quite") === 0 ||
         guessFeedback.indexOf("Type an answer") === 0
       ) {
@@ -2106,16 +2108,16 @@ function render() {
     if (solvedCorrectly[riddleIndex]) {
       html += '<p class="points-badge">' + formatPointsEarned(riddlePoints[riddleIndex]) + "</p>";
     } else if (gaveUp[riddleIndex]) {
-      html += '<p class="missed-badge">Gave up — no points</p>';
+      html += '<p class="missed-badge">Surrendered - no points</p>';
     } else {
-      html += '<p class="missed-badge">No point — answer revealed</p>';
+      html += '<p class="missed-badge">No points - answer revealed</p>';
     }
 
     html += "</div>";
 
     if (riddleIndex === riddles.length - 1) {
       html +=
-        '<button id="end-game-inline-btn" type="button" class="start-btn end-game-inline-btn">End Game</button>';
+        '<button id="end-game-inline-btn" type="button" class="start-btn end-game-inline-btn">Mic Drop</button>';
     }
   }
 
